@@ -10,12 +10,11 @@ var Docker = require('dockerode'),
     DockerEvents = require('docker-events'),
     _ = require('underscore');
 
-dockerHost.protocol = dockerHost.protocol.replace(':', '').trim();
+dockerHost.protocol = dockerHost.protocol.slice(0, -1);
 var docker = new Docker(dockerHost);
 var emitter = new DockerEvents({
     docker: docker,
 });
-
 function containerName(containerInfo) {
     return _(containerInfo.Names).filter(function(name) {
         return name.split('/').length == 2
