@@ -1,16 +1,17 @@
+#!/usr/bin/env node
+
 'use strict'
 
 var Docker = require('dockerode'),
+    dockerHost = require('docker-host')(),
     fs = require('fs'),
     q = require('q'),
     es = require('event-stream'),
     DockerEvents = require('docker-events'),
     _ = require('underscore');
 
-var docker = new Docker({
-    host: '172.16.42.43',
-    port: 4243
-});
+dockerHost.protocol = dockerHost.protocol.replace(':', '').trim();
+var docker = new Docker(dockerHost);
 var emitter = new DockerEvents({
     docker: docker,
 });
