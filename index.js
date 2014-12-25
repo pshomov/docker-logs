@@ -15,10 +15,15 @@ var docker = new Docker(dockerHost);
 var emitter = new DockerEvents({
     docker: docker,
 });
+
 function containerName(containerInfo) {
     return _(containerInfo.Names).filter(function(name) {
         return name.split('/').length == 2
     })[0].split('/')[1];
+}
+
+function constructLogLine(containerInfo, containerName, data) {
+    return containerName + ": " + data + '\n';
 }
 
 q.ninvoke(docker, 'listContainers')
@@ -34,11 +39,10 @@ q.ninvoke(docker, 'listContainers')
                         stderr: true
                     })
                     .then(function(stream) {
-                        // console.log('rewiring std for', containerInfo.Image)
                         stream
                             .pipe(es.split())
                             .pipe(es.map(function(data, cb) {
-                                cb(null, name + ": " + data + '\n');
+                                cb(null, constructLogLine(containerInfo, name, data));
                             }))
                             .pipe(process.stdout);
                         return stream;
