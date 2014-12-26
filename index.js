@@ -6,6 +6,7 @@ var Docker = require('dockerode'),
     dockerHost = require('docker-host')(),
     fs = require('fs'),
     q = require('q'),
+    colors = require('colors'),
     es = require('event-stream'),
     DockerEvents = require('docker-events'),
     _ = require('underscore');
@@ -16,16 +17,24 @@ var emitter = new DockerEvents({
     docker: docker,
 });
 
+
+var colorForImage = [colors.red, colors.grey, colors.yellow, colors.green, colors.blue];
+
 function containerName(containerInfo) {
     return _(containerInfo.Names).filter(function(name) {
         return name.split('/').length == 2
     })[0].split('/')[1];
 }
 
-function constructLogLine(containerInfo, containerName, data) {
-    return containerName + ": " + data + '\n';
+function constructLogLine(containerInfo, containerName, data, color) {
+    return colors.bold(color(containerName + ':')) + color(data + '\n');
 }
-
+var colorSelector = 0;
+function selectNextColor(){
+    colorSelector += 1;
+    colorSelector = colorSelector % colorForImage.length;
+    return colorForImage[colorSelector];
+}
 q.ninvoke(docker, 'listContainers')
     .then(function(containersInfo) {
         return q.all(_(containersInfo)
@@ -39,10 +48,11 @@ q.ninvoke(docker, 'listContainers')
                         stderr: true
                     })
                     .then(function(stream) {
+                        var color = selectNextColor();
                         stream
                             .pipe(es.split())
                             .pipe(es.map(function(data, cb) {
-                                cb(null, constructLogLine(containerInfo, name, data));
+                                cb(null, constructLogLine(containerInfo, name, data, color));
                             }))
                             .pipe(process.stdout);
                         return stream;

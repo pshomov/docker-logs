@@ -16,6 +16,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "colors": "^1.0.3",
     "docker-events": "0.0.2",
     "docker-host": "^3.0.0",
     "dockerode": "^2.0.5",
