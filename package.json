@@ -1,6 +1,6 @@
 {
   "name": "docker-logs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "an aggregated view of the logs of all the containers in a docker host",
   "main": "index.js",
   "scripts": {
@@ -14,6 +14,10 @@
   "bin": {
     "docker-logs": "./index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:pshomov/docker-logs.git"
+  },  
   "license": "MIT",
   "dependencies": {
     "colors": "^1.0.3",
